@@ -4,6 +4,7 @@ import { authService } from './auth.service';
 import config from '../../config';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
+import { TUser } from './auth.interface';
 
 const signupUser = catchAsync(async (req, res) => {
   const { accessToken, refreshToken } = await authService.signupUser(req.body);
@@ -88,6 +89,56 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+const getUserProfile = catchAsync(async (req, res) => {
+  const user = await authService.getUserProfile(req.user as TUser);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User profile retrieved successfully!',
+    data: user,
+  });
+});
+
+const updateUserProfile = catchAsync(async (req, res) => {
+  const user = await authService.updateUserProfile(req.user as TUser, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User profile updated successfully!',
+    data: user,
+  });
+});
+
+const addFollower = catchAsync(async (req, res) => {
+  const user = await authService.addFollower(
+    req.user as TUser,
+    req.body.userId,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Follower added successfully!',
+    data: user,
+  });
+});
+
+const unfollowUser = catchAsync(async (req, res) => {
+  const user = await authService.unfollowUser(
+    req.user as TUser,
+    req.body.userId,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Follower removed successfully!',
+    data: user,
+  });
+});
+
 export const authController = {
   loginUser,
   changePassword,
@@ -95,4 +146,8 @@ export const authController = {
   forgotPassword,
   resetPassword,
   signupUser,
+  getUserProfile,
+  updateUserProfile,
+  addFollower,
+  unfollowUser,
 };

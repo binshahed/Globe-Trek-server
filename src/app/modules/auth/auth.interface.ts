@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type TUserRole = 'admin' | 'user';
 
@@ -11,8 +11,11 @@ export type TUser = {
   password: string;
   phone: string;
   photoUrl: string;
+  subscriptions: 'free' | 'premium';
   role: TUserRole;
   address: string;
+  followers: Types.ObjectId[];
+  following: Types.ObjectId[];
 };
 
 export interface TUserModel extends Model<TUser> {
@@ -46,3 +49,5 @@ export type TPasswordChange = {
   oldPassword: string;
   newPassword: string;
 };
+
+export type TSubscriptions = 'free' | 'premium';

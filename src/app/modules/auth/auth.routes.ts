@@ -50,4 +50,17 @@ router
     authController.forgotPassword,
   );
 
+router
+  .route('/me')
+  .get(auth('admin', 'user'), authController.getUserProfile)
+  .patch(auth('admin', 'user'), authController.updateUserProfile);
+
+router
+  .route('/follow')
+  .patch(auth('admin', 'user'), authController.addFollower);
+
+router
+  .route('/unfollow')
+  .patch(auth('admin', 'user'), authController.unfollowUser);
+
 export const authRouter = router;

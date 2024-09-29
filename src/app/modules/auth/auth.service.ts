@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 
@@ -9,10 +10,14 @@ import { JwtPayload } from 'jsonwebtoken';
 import { UserModel } from './auth.model';
 import {
   TPasswordChange,
+  TSubscriptions,
+  TUser,
   TUserLogin,
   TUserSignUp,
 } from './auth.interface';
 import { sendEmail } from '../../utils/sendEmail';
+
+import mongoose from 'mongoose';
 
 const signupUser = async (payload: TUserSignUp) => {
   // Check if user already exists by email
@@ -44,6 +49,7 @@ const signupUser = async (payload: TUserSignUp) => {
       address: newUser.address as string,
       phone: newUser.phone as string,
       role: newUser.role as string,
+      subscriptions: newUser.subscriptions as TSubscriptions,
     },
     config.jwtAccessSecretKey as string,
     config.jwtAccessExpiresIn as string,
@@ -58,6 +64,7 @@ const signupUser = async (payload: TUserSignUp) => {
       address: newUser.address as string,
       phone: newUser.phone as string,
       role: newUser.role as string,
+      subscriptions: newUser.subscriptions as TSubscriptions,
     },
     config.jwtRefreshSecretKey as string,
     config.jwtRefreshExpiresIn as string,
@@ -100,6 +107,7 @@ const loginUser = async (payload: TUserLogin) => {
       address: user.address as string,
       phone: user.phone as string,
       role: user.role as string,
+      subscriptions: user.subscriptions as TSubscriptions,
     },
     config.jwtAccessSecretKey as string,
     config.jwtAccessExpiresIn as string,
@@ -114,6 +122,7 @@ const loginUser = async (payload: TUserLogin) => {
       address: user.address as string,
       phone: user.phone as string,
       role: user.role as string,
+      subscriptions: user.subscriptions as TSubscriptions,
     },
     config.jwtRefreshSecretKey as string,
     config.jwtRefreshExpiresIn as string,
@@ -169,11 +178,11 @@ const refreshToken = async (token: string) => {
 
   // Verify the access token and decode the payload
   const decodedToken = verifyToken(token, config.jwtRefreshSecretKey as string);
-  const { role, _id, name, email, address,phone } = decodedToken.data;
+  const decodedData = decodedToken.data;
   const { iat } = decodedToken;
 
   // Fetch the user's full data using the id from the token
-  const user = await UserModel.findById(_id);
+  const user = await UserModel.findById(decodedData?._id);
 
   // check if the user is exist
   if (!user) {
@@ -193,14 +202,7 @@ const refreshToken = async (token: string) => {
 
   //   generate access token
   const accessToken = createToken(
-    {
-      _id: _id as string,
-      name: name as string,
-      email: email as string,
-      address: address as string,
-      phone: phone as string,
-      role: role as string,
-    },
+    decodedData,
     config.jwtAccessSecretKey as string,
     config.jwtAccessExpiresIn as string,
   );
@@ -228,6 +230,7 @@ const forgotPassword = async (email: string) => {
       address: user.address as string,
       phone: user.phone as string,
       role: user.role as string,
+      subscriptions: user.subscriptions as TSubscriptions,
     },
     config.jwtAccessSecretKey as string,
     '10m',
@@ -281,6 +284,159 @@ const resetPassword = async (
   return null;
 };
 
+const getUserProfile = async (user: TUser) => {
+  // Fetch the user's full data using the id from the token
+  const profile = await UserModel.findById(user?._id).populate(['followers']);
+
+  // check if the user is exist
+  if (!profile) {
+    throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
+  }
+
+  return profile;
+};
+
+const updateUserProfile = async (user: TUser, payload: any) => {
+  payload.followers = [new mongoose.Types.ObjectId('66f93c27b43304ccbf9aca7e')];
+
+  const updatedUser = await UserModel.findByIdAndUpdate(user._id, payload, {
+    new: true,
+  });
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
+  }
+
+  return updatedUser;
+};
+
+const addFollower = async (user: TUser, followerId: string) => {
+  // Trim the followerId to remove any leading/trailing spaces
+  const trimmedFollowerId = followerId.trim();
+
+  // Convert followerId to ObjectId
+  const objectIdFollower = new mongoose.Types.ObjectId(trimmedFollowerId);
+
+  const isUserExist = await UserModel.findById(objectIdFollower);
+
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const isFollowerAlreadyExist = await UserModel.findOne({
+    _id: user._id,
+    following: { $in: [isUserExist._id] },
+  });
+
+  if (isFollowerAlreadyExist) {
+    throw new AppError(httpStatus.CONFLICT, `You Are already following`);
+  }
+
+  // Start a Mongoose session
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Update the user with the session to track this operation within the transaction
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user._id,
+      { $push: { following: objectIdFollower } }, // Use ObjectId here
+      { new: true, session }, // Pass the session here
+    );
+
+    // Check if the user exists
+    if (!updatedUser) {
+      throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
+    }
+
+    await UserModel.findByIdAndUpdate(
+      objectIdFollower,
+      { $push: { followers: user._id } },
+      { new: true, session }, // Pass the session here
+    );
+
+    // Commit the transaction if everything goes well
+    await session.commitTransaction();
+    session.endSession(); // End the session
+
+    return updatedUser;
+  } catch (error) {
+    // Abort the transaction if an error occurs
+    await session.abortTransaction();
+    session.endSession(); // End the session
+
+    // Re-throw the error so it can be handled by higher-level error handlers
+    throw error;
+  }
+};
+
+const unfollowUser = async (user: TUser, followerId: string) => {
+  // Trim the followerId to remove any leading/trailing spaces
+  const trimmedFollowerId = followerId.trim();
+
+  // Convert followerId to ObjectId
+  const objectIdFollower = new mongoose.Types.ObjectId(trimmedFollowerId);
+
+  console.log(objectIdFollower);
+
+  // Check if the user to unfollow exists
+  const isUserExist = await UserModel.findById(objectIdFollower);
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Start a Mongoose session
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Check if the user is already following the target user
+    const isFollowing = await UserModel.findOne({
+      _id: user._id,
+      following: { $in: [objectIdFollower] },
+    });
+
+    if (!isFollowing) {
+      throw new AppError(
+        httpStatus.CONFLICT,
+        'You are not following this user',
+      );
+    }
+
+    // Update the user to remove the following relationship
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user._id,
+      { $pull: { following: objectIdFollower } }, // Use $pull to remove the follower
+      { new: true, session }, // Pass the session here
+    );
+
+    // Check if the user exists
+    if (!updatedUser) {
+      throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
+    }
+
+    // Also remove the user from the followers list of the unfollowed user
+    await UserModel.findByIdAndUpdate(
+      objectIdFollower,
+      { $pull: { followers: user._id } }, // Use $pull to remove the user from followers
+      { new: true, session }, // Pass the session here
+    );
+
+    // Commit the transaction if everything goes well
+    await session.commitTransaction();
+    session.endSession(); // End the session
+
+    return updatedUser; // Return the updated user information
+  } catch (error) {
+    // Abort the transaction if an error occurs
+    await session.abortTransaction();
+    session.endSession(); // End the session
+
+    // Re-throw the error so it can be handled by higher-level error handlers
+    throw error;
+  }
+};
+
 export const authService = {
   loginUser,
   changePassword,
@@ -288,4 +444,8 @@ export const authService = {
   forgotPassword,
   resetPassword,
   signupUser,
+  getUserProfile,
+  updateUserProfile,
+  addFollower,
+  unfollowUser,
 };

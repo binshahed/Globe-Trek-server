@@ -17,6 +17,12 @@ const userSchema = new Schema<TUser, TUserModel>(
       unique: true,
       match: [/\S+@\S+\.\S+/, 'Email is invalid'],
     },
+    subscriptions: {
+      type: String,
+      enum: ['free', 'premium'],
+      default: 'free',
+      trim: true,
+    },
     passwordChangeAt: { type: Date },
     password: {
       type: String,
@@ -24,7 +30,11 @@ const userSchema = new Schema<TUser, TUserModel>(
       required: [true, 'Password is required'],
       minlength: [4, 'Password must be at least 4 characters long'],
     },
-    photoUrl: { type: String, default: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png' },
+    photoUrl: {
+      type: String,
+      default:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png',
+    },
     phone: {
       type: String,
       required: [true, 'Phone number is required'],
@@ -40,6 +50,8 @@ const userSchema = new Schema<TUser, TUserModel>(
       type: String,
       required: [true, 'Address is required'],
     },
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,

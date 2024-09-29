@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
-
+import { TSubscriptions } from './auth.interface';
 
 export const createToken = (
   payload: {
@@ -9,6 +9,7 @@ export const createToken = (
     phone: string;
     role: string;
     address: string;
+    subscriptions: TSubscriptions;
   },
   secretKey: string,
   expireTime: string,
@@ -19,8 +20,8 @@ export const createToken = (
     },
     secretKey,
     { expiresIn: expireTime },
-  )
-}
+  );
+};
 
 export const verifyToken = (token: string, key: string) => {
   return jwt.verify(token, key) as JwtPayload
