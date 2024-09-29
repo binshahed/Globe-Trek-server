@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from 'mongoose';
 
-export interface TPost {
-  id: string;
+export interface TBlog {
   title: string;
   slug: string;
   author: Types.ObjectId;
@@ -13,14 +12,6 @@ export interface TPost {
   updatedAt: any;
   featuredImage: string;
   status: string;
-  comments: TComment[];
-  likes: number;
-  dislikes: number;
-}
-
-export interface TComment {
-  id: string;
-  author: string;
-  comment: string;
-  createdAt: any;
+  likes: Types.ObjectId[];
+  dislikes: Types.ObjectId[];
 }

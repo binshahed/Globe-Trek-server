@@ -1,7 +1,7 @@
 import { Application, Request, Response } from 'express';
 import { authRouter } from '../modules/auth/auth.routes';
 import { categoryRouter } from '../modules/category/category.routes';
-
+import { blogRouter } from '../modules/blog/blog.routes';
 
 const modulesRouters = [
   {
@@ -11,6 +11,10 @@ const modulesRouters = [
   {
     path: '/api/category',
     route: categoryRouter,
+  },
+  {
+    path: '/api/blog',
+    route: blogRouter,
   },
 ];
 

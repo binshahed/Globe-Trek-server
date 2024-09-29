@@ -1,30 +1,13 @@
 import { Schema, model } from 'mongoose';
-import { TComment, TPost } from './blog.interface';
+import { TBlog } from './blog.interface';
 
-const commentSchema = new Schema<TComment>(
-  {
-    author: {
-      type: String,
-      required: true,
-    },
-    comment: {
-      type: String,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-  },
-  { _id: false },
-);
-
-const postSchema = new Schema<TPost>(
+const blogSchema = new Schema<TBlog>(
   {
     title: {
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     slug: {
       type: String,
@@ -61,29 +44,25 @@ const postSchema = new Schema<TPost>(
       type: String,
       required: true,
     },
-    status: {
-      type: String,
-      enum: ['draft', 'published', 'archived'],
-      default: 'draft',
-    },
-    comments: {
-      type: [commentSchema],
-      default: [],
-    },
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    dislikes: {
-      type: Number,
-      default: 0,
-    },
+
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    dislikes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
   },
 );
 
-const PostModel = model<TPost>('Post', postSchema);
+const BlogModel = model<TBlog>('Blog', blogSchema);
 
-export default PostModel;
+export default BlogModel;
