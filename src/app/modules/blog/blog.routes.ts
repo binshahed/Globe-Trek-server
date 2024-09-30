@@ -15,4 +15,5 @@ router
     blogController.createBlog,
   );
 
+router.route('/my-blog').get(auth('admin', 'user'), blogController.myBlogs);
 export const blogRouter = router;

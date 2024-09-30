@@ -13,6 +13,10 @@ const signupUser = catchAsync(async (req, res) => {
     secure: config.nodeEnv === 'production',
     httpOnly: true,
   });
+  res.cookie('accessToken', accessToken, {
+    secure: config.nodeEnv === 'production',
+    httpOnly: true,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -28,6 +32,11 @@ const loginUser = catchAsync(async (req, res) => {
   const { accessToken, refreshToken } = await authService.loginUser(req.body);
 
   res.cookie('refreshToken', refreshToken, {
+    secure: config.nodeEnv === 'production',
+    httpOnly: true,
+  });
+
+  res.cookie('accessToken', accessToken, {
     secure: config.nodeEnv === 'production',
     httpOnly: true,
   });

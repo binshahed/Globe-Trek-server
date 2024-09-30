@@ -286,7 +286,9 @@ const resetPassword = async (
 
 const getUserProfile = async (user: TUser) => {
   // Fetch the user's full data using the id from the token
-  const profile = await UserModel.findById(user?._id).populate(['followers']);
+  const profile = await UserModel.findById(user?._id)
+    .populate('followers')
+    .populate('following');
 
   // check if the user is exist
   if (!profile) {

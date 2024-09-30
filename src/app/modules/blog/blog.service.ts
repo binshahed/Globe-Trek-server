@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { QueryBuilder } from '../../builder/QueryBuilder';
 import { TBlog } from './blog.interface';
 import BlogModel from './blog.model';
@@ -20,7 +21,14 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
   return blogQuery.modelQuery.exec();
 };
 
+const myBlogs = async (userId: Types.ObjectId) => {
+  const blog = await BlogModel.find({ author: userId });
+
+  return blog;
+};
+
 export const blogService = {
   createBlog,
   getAllBlogs,
+  myBlogs,
 };
