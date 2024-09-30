@@ -22,7 +22,9 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
 };
 
 const myBlogs = async (userId: Types.ObjectId) => {
-  const blog = await BlogModel.find({ author: userId });
+  const blog = await BlogModel.find({ author: userId })
+    .populate('author')
+    .sort({ createdAt: -1 });
 
   return blog;
 };

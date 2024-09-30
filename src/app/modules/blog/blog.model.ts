@@ -24,22 +24,7 @@ const blogSchema = new Schema<TBlog>(
       type: String,
       required: true,
     },
-    excerpt: {
-      type: String,
-      required: true,
-    },
-    tags: {
-      type: [String],
-      default: [],
-    },
-    publishedAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
+
     featuredImage: {
       type: String,
       required: true,
