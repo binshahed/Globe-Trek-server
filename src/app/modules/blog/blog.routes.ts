@@ -15,5 +15,10 @@ router
     blogController.createBlog,
   );
 
+
+
 router.route('/my-blog').get(auth('admin', 'user'), blogController.myBlogs);
+
+router.route('/:blogId').get(blogController.blogDetails);
+
 export const blogRouter = router;

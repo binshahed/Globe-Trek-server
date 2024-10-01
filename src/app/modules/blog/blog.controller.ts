@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
@@ -36,8 +37,21 @@ const myBlogs = catchAsync(async (req, res) => {
   });
 });
 
+const blogDetails = catchAsync(async (req, res) => {
+  const { blogId } = req.params;
+  const result = await blogService.blogDetails(blogId as any);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog details retrieved successfully',
+    data: result,
+  });
+});
+
 export const blogController = {
   createBlog,
   getAllBlogs,
   myBlogs,
+  blogDetails,
 };

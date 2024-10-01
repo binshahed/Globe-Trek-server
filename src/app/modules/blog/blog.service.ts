@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Types } from 'mongoose';
 import { QueryBuilder } from '../../builder/QueryBuilder';
 import { TBlog } from './blog.interface';
@@ -29,8 +30,18 @@ const myBlogs = async (userId: Types.ObjectId) => {
   return blog;
 };
 
+const blogDetails = async (id: any) => {
+  const blog = await BlogModel.findById(id)
+    .populate('author')
+    .populate('likes')
+    .populate('dislikes');
+
+  return blog;
+};
+
 export const blogService = {
   createBlog,
   getAllBlogs,
   myBlogs,
+  blogDetails,
 };
