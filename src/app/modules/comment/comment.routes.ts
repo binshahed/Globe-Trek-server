@@ -15,4 +15,16 @@ router
     commentController.createComment,
   );
 
+router
+  .route('/updateComment')
+  .patch(
+    auth(),
+    validateRequest(commentValidation.updateCommentValidationSchema),
+    commentController.updateComment,
+  );
+
+router
+  .route('/:commentId')
+  .delete(auth('admin', 'user'), commentController.deleteComment);
+
 export const commentRouter = router;

@@ -2,6 +2,7 @@ import { Application, Request, Response } from 'express';
 import { authRouter } from '../modules/auth/auth.routes';
 import { categoryRouter } from '../modules/category/category.routes';
 import { blogRouter } from '../modules/blog/blog.routes';
+import { commentRouter } from '../modules/comment/comment.routes';
 
 const modulesRouters = [
   {
@@ -15,6 +16,10 @@ const modulesRouters = [
   {
     path: '/api/blog',
     route: blogRouter,
+  },
+  {
+    path: '/api/comment',
+    route: commentRouter,
   },
 ];
 

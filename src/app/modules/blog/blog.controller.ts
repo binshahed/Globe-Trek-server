@@ -49,9 +49,34 @@ const blogDetails = catchAsync(async (req, res) => {
   });
 });
 
+const likeToggle = catchAsync(async (req, res) => {
+  const { blogId } = req.params;
+  const result = await blogService.likeToggle(req.user._id, blogId as any);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Like toggled successfully',
+    data: result,
+  });
+});
+const disLikeToggle = catchAsync(async (req, res) => {
+  const { blogId } = req.params;
+  const result = await blogService.disLikeToggle(req.user._id, blogId as any);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Dislike toggled successfully',
+    data: result,
+  });
+});
+
 export const blogController = {
   createBlog,
   getAllBlogs,
   myBlogs,
   blogDetails,
+  likeToggle,
+  disLikeToggle,
 };

@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 import { QueryBuilder } from '../../builder/QueryBuilder';
 import { TBlog } from './blog.interface';
 import BlogModel from './blog.model';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
 
 const createBlog = async (payload: TBlog) => {
   // Implement the blog creation logic here, using the provided payload
@@ -17,9 +19,9 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
   // Implement the logic to retrieve all blogs from the database
   // Return an array of blog objects
 
-  const blogQuery = new QueryBuilder(BlogModel.find(), query).sort();
+  const blogQuery = new QueryBuilder(BlogModel.find(), query).paginate().sort();
 
-  return blogQuery.modelQuery.exec();
+  return blogQuery.modelQuery.populate('author').exec();
 };
 
 const myBlogs = async (userId: Types.ObjectId) => {
@@ -39,9 +41,61 @@ const blogDetails = async (id: any) => {
   return blog;
 };
 
+const likeToggle = async (userId: Types.ObjectId, blogId: Types.ObjectId) => {
+  // Find the blog post by its ID
+  const blog = await BlogModel.findById(blogId);
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+
+  // Check if the user has already liked the blog
+  const isLiked = blog.likes.includes(userId);
+
+  if (isLiked) {
+    // If liked, remove the user's ID from the likes array (unlike)
+    blog.likes = blog.likes.filter((id) => !id.equals(userId));
+  } else {
+    // If not liked, add the user's ID to the likes array (like)
+    blog.likes.push(userId);
+  }
+
+  // Save the updated blog post
+  await blog.save();
+
+  return blog;
+};
+const disLikeToggle = async (
+  userId: Types.ObjectId,
+  blogId: Types.ObjectId,
+) => {
+  // Find the blog post by its ID
+  const blog = await BlogModel.findById(blogId);
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+
+  // Check if the user has already liked the blog
+  const isLiked = blog.dislikes.includes(userId);
+
+  if (isLiked) {
+    // If liked, remove the user's ID from the likes array (unlike)
+    blog.dislikes = blog.dislikes.filter((id) => !id.equals(userId));
+  } else {
+    // If not liked, add the user's ID to the likes array (like)
+    blog.dislikes.push(userId);
+  }
+
+  // Save the updated blog post
+  await blog.save();
+
+  return blog;
+};
+
 export const blogService = {
   createBlog,
   getAllBlogs,
   myBlogs,
   blogDetails,
+  likeToggle,
+  disLikeToggle,
 };

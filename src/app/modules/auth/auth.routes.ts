@@ -57,10 +57,7 @@ router
 
 router
   .route('/follow')
-  .patch(auth('admin', 'user'), authController.addFollower);
+  .patch(auth('admin', 'user'), authController.toggleFollow);
 
-router
-  .route('/unfollow')
-  .patch(auth('admin', 'user'), authController.unfollowUser);
 
 export const authRouter = router;

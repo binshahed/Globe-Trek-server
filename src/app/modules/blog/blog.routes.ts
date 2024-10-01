@@ -15,10 +15,15 @@ router
     blogController.createBlog,
   );
 
-
-
 router.route('/my-blog').get(auth('admin', 'user'), blogController.myBlogs);
 
 router.route('/:blogId').get(blogController.blogDetails);
+
+router
+  .route('/like/:blogId')
+  .patch(auth('admin', 'user'), blogController.likeToggle);
+router
+  .route('/dislike/:blogId')
+  .patch(auth('admin', 'user'), blogController.disLikeToggle);
 
 export const blogRouter = router;

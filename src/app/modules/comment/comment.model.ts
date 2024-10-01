@@ -24,6 +24,6 @@ const commentSchema = new Schema<TComment>(
   },
 );
 
-const commentModel = model<TComment>('Comment', commentSchema);
+const CommentModel = model<TComment>('Comment', commentSchema);
 
-export default commentModel;
+export default CommentModel;

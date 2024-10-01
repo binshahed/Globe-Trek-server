@@ -10,6 +10,7 @@ export const createToken = (
     role: string;
     address: string;
     subscriptions: TSubscriptions;
+    photoUrl: string;
   },
   secretKey: string,
   expireTime: string,

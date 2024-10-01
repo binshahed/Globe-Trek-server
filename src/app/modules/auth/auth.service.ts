@@ -50,6 +50,7 @@ const signupUser = async (payload: TUserSignUp) => {
       phone: newUser.phone as string,
       role: newUser.role as string,
       subscriptions: newUser.subscriptions as TSubscriptions,
+      photoUrl: newUser.photoUrl as string,
     },
     config.jwtAccessSecretKey as string,
     config.jwtAccessExpiresIn as string,
@@ -65,6 +66,7 @@ const signupUser = async (payload: TUserSignUp) => {
       phone: newUser.phone as string,
       role: newUser.role as string,
       subscriptions: newUser.subscriptions as TSubscriptions,
+      photoUrl: newUser.photoUrl as string,
     },
     config.jwtRefreshSecretKey as string,
     config.jwtRefreshExpiresIn as string,
@@ -108,6 +110,7 @@ const loginUser = async (payload: TUserLogin) => {
       phone: user.phone as string,
       role: user.role as string,
       subscriptions: user.subscriptions as TSubscriptions,
+      photoUrl: user.photoUrl as string,
     },
     config.jwtAccessSecretKey as string,
     config.jwtAccessExpiresIn as string,
@@ -123,6 +126,7 @@ const loginUser = async (payload: TUserLogin) => {
       phone: user.phone as string,
       role: user.role as string,
       subscriptions: user.subscriptions as TSubscriptions,
+      photoUrl: user.photoUrl as string,
     },
     config.jwtRefreshSecretKey as string,
     config.jwtRefreshExpiresIn as string,
@@ -231,6 +235,7 @@ const forgotPassword = async (email: string) => {
       phone: user.phone as string,
       role: user.role as string,
       subscriptions: user.subscriptions as TSubscriptions,
+      photoUrl: user.photoUrl as string,
     },
     config.jwtAccessSecretKey as string,
     '10m',
@@ -312,26 +317,17 @@ const updateUserProfile = async (user: TUser, payload: any) => {
   return updatedUser;
 };
 
-const addFollower = async (user: TUser, followerId: string) => {
+const toggleFollow = async (user: TUser, followerId: string) => {
   // Trim the followerId to remove any leading/trailing spaces
   const trimmedFollowerId = followerId.trim();
 
   // Convert followerId to ObjectId
   const objectIdFollower = new mongoose.Types.ObjectId(trimmedFollowerId);
 
+  // Check if the user (followerId) exists
   const isUserExist = await UserModel.findById(objectIdFollower);
-
   if (!isUserExist) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-
-  const isFollowerAlreadyExist = await UserModel.findOne({
-    _id: user._id,
-    following: { $in: [isUserExist._id] },
-  });
-
-  if (isFollowerAlreadyExist) {
-    throw new AppError(httpStatus.CONFLICT, `You Are already following`);
   }
 
   // Start a Mongoose session
@@ -339,96 +335,47 @@ const addFollower = async (user: TUser, followerId: string) => {
   session.startTransaction();
 
   try {
-    // Update the user with the session to track this operation within the transaction
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      user._id,
-      { $push: { following: objectIdFollower } }, // Use ObjectId here
-      { new: true, session }, // Pass the session here
-    );
+    // Check if the user is already following
+    const isFollowing = await UserModel.findOne({
+      _id: user._id,
+      following: { $in: [objectIdFollower] }, // Check if the user is in the following list
+    });
 
-    // Check if the user exists
-    if (!updatedUser) {
-      throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
+    let updatedUser;
+
+    if (isFollowing) {
+      // Unfollow: Remove from following and follower list
+      updatedUser = await UserModel.findByIdAndUpdate(
+        user._id,
+        { $pull: { following: objectIdFollower } }, // Remove from following
+        { new: true, session },
+      );
+
+      await UserModel.findByIdAndUpdate(
+        objectIdFollower,
+        { $pull: { followers: user._id } }, // Remove from followers
+        { new: true, session },
+      );
+    } else {
+      // Follow: Add to following and follower list
+      updatedUser = await UserModel.findByIdAndUpdate(
+        user._id,
+        { $push: { following: objectIdFollower } }, // Add to following
+        { new: true, session },
+      );
+
+      await UserModel.findByIdAndUpdate(
+        objectIdFollower,
+        { $push: { followers: user._id } }, // Add to followers
+        { new: true, session },
+      );
     }
-
-    await UserModel.findByIdAndUpdate(
-      objectIdFollower,
-      { $push: { followers: user._id } },
-      { new: true, session }, // Pass the session here
-    );
 
     // Commit the transaction if everything goes well
     await session.commitTransaction();
     session.endSession(); // End the session
 
     return updatedUser;
-  } catch (error) {
-    // Abort the transaction if an error occurs
-    await session.abortTransaction();
-    session.endSession(); // End the session
-
-    // Re-throw the error so it can be handled by higher-level error handlers
-    throw error;
-  }
-};
-
-const unfollowUser = async (user: TUser, followerId: string) => {
-  // Trim the followerId to remove any leading/trailing spaces
-  const trimmedFollowerId = followerId.trim();
-
-  // Convert followerId to ObjectId
-  const objectIdFollower = new mongoose.Types.ObjectId(trimmedFollowerId);
-
-  console.log(objectIdFollower);
-
-  // Check if the user to unfollow exists
-  const isUserExist = await UserModel.findById(objectIdFollower);
-  if (!isUserExist) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-
-  // Start a Mongoose session
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    // Check if the user is already following the target user
-    const isFollowing = await UserModel.findOne({
-      _id: user._id,
-      following: { $in: [objectIdFollower] },
-    });
-
-    if (!isFollowing) {
-      throw new AppError(
-        httpStatus.CONFLICT,
-        'You are not following this user',
-      );
-    }
-
-    // Update the user to remove the following relationship
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      user._id,
-      { $pull: { following: objectIdFollower } }, // Use $pull to remove the follower
-      { new: true, session }, // Pass the session here
-    );
-
-    // Check if the user exists
-    if (!updatedUser) {
-      throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
-    }
-
-    // Also remove the user from the followers list of the unfollowed user
-    await UserModel.findByIdAndUpdate(
-      objectIdFollower,
-      { $pull: { followers: user._id } }, // Use $pull to remove the user from followers
-      { new: true, session }, // Pass the session here
-    );
-
-    // Commit the transaction if everything goes well
-    await session.commitTransaction();
-    session.endSession(); // End the session
-
-    return updatedUser; // Return the updated user information
   } catch (error) {
     // Abort the transaction if an error occurs
     await session.abortTransaction();
@@ -448,6 +395,5 @@ export const authService = {
   signupUser,
   getUserProfile,
   updateUserProfile,
-  addFollower,
-  unfollowUser,
+  toggleFollow,
 };

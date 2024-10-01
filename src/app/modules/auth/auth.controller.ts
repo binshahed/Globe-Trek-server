@@ -120,8 +120,8 @@ const updateUserProfile = catchAsync(async (req, res) => {
   });
 });
 
-const addFollower = catchAsync(async (req, res) => {
-  const user = await authService.addFollower(
+const toggleFollow = catchAsync(async (req, res) => {
+  const user = await authService.toggleFollow(
     req.user as TUser,
     req.body.userId,
   );
@@ -130,20 +130,6 @@ const addFollower = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Follower added successfully!',
-    data: user,
-  });
-});
-
-const unfollowUser = catchAsync(async (req, res) => {
-  const user = await authService.unfollowUser(
-    req.user as TUser,
-    req.body.userId,
-  );
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Follower removed successfully!',
     data: user,
   });
 });
@@ -157,6 +143,5 @@ export const authController = {
   signupUser,
   getUserProfile,
   updateUserProfile,
-  addFollower,
-  unfollowUser,
+  toggleFollow,
 };
