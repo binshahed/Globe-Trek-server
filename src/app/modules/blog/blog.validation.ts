@@ -21,7 +21,16 @@ const createBlogValidationSchema = z.object({
     dislikes: z.array(objectIdSchema).optional(),
   }),
 });
+const updateBlogValidation = z.object({
+  body: z.object({
+    title: z.string().min(1, 'Title is required').optional(),
+    slug: z.string().min(1, 'Slug is required').optional(),
+    content: z.string().min(1, 'Content is required').optional(),
+    featuredImage: z.string().url().optional(),
+  }),
+});
 
 export const blogValidation = {
   createBlogValidationSchema,
+  updateBlogValidation,
 };

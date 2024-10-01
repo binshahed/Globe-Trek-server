@@ -304,8 +304,6 @@ const getUserProfile = async (user: TUser) => {
 };
 
 const updateUserProfile = async (user: TUser, payload: any) => {
-  payload.followers = [new mongoose.Types.ObjectId('66f93c27b43304ccbf9aca7e')];
-
   const updatedUser = await UserModel.findByIdAndUpdate(user._id, payload, {
     new: true,
   });

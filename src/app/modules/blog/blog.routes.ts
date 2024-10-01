@@ -17,7 +17,14 @@ router
 
 router.route('/my-blog').get(auth('admin', 'user'), blogController.myBlogs);
 
-router.route('/:blogId').get(blogController.blogDetails);
+router
+  .route('/:blogId')
+  .get(blogController.blogDetails)
+  .patch(
+    auth('admin', 'user'),
+    validateRequest(blogValidation.updateBlogValidation),
+    blogController?.updateBlog,
+  );
 
 router
   .route('/like/:blogId')

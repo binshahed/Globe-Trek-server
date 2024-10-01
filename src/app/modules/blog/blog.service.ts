@@ -14,6 +14,44 @@ const createBlog = async (payload: TBlog) => {
   const blog = await BlogModel.create(payload);
   return blog;
 };
+const updateBlog = async (
+  user: any,
+  blogId: string,
+  payload: Partial<TBlog>,
+) => {
+  // Check if the blog exists and belongs to the user
+  const isBlogExist = await BlogModel.findOne({
+    _id: blogId,
+    author: user._id,
+  });
+
+  if (!isBlogExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Blog not found or you do not have permission to edit this blog',
+    );
+  }
+
+  // Use a single query to find and update the blog
+  const updatedBlog = await BlogModel.findOneAndUpdate(
+    { _id: blogId, author: user._id }, // Ensure the user owns the blog
+    { ...payload }, // Update the blog with the payload data
+    {
+      new: true, // Return the updated document
+      runValidators: true, // Ensure validators are run on update
+    },
+  );
+
+  // Check if the blog was updated successfully
+  if (!updatedBlog) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Blog not found or you do not have permission to edit this blog',
+    );
+  }
+
+  return updatedBlog;
+};
 
 const getAllBlogs = async (query: Record<string, unknown>) => {
   // Implement the logic to retrieve all blogs from the database
@@ -98,4 +136,5 @@ export const blogService = {
   blogDetails,
   likeToggle,
   disLikeToggle,
+  updateBlog,
 };

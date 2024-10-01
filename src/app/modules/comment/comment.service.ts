@@ -60,7 +60,7 @@ const updateComment = async (
 };
 
 const deleteComment = async (user: any, commentId: string) => {
-  console.log(user, commentId);
+
 
   const deletedComment = await CommentModel.findOneAndDelete({
     user, // Check if the comment belongs to the user
