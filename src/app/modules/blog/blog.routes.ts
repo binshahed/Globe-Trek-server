@@ -24,7 +24,8 @@ router
     auth('admin', 'user'),
     validateRequest(blogValidation.updateBlogValidation),
     blogController?.updateBlog,
-  );
+  )
+  .delete(auth('admin', 'user'), blogController.deleteBlog);
 
 router
   .route('/like/:blogId')

@@ -16,6 +16,8 @@ const createBlogValidationSchema = z.object({
     slug: z.string().min(1, 'Slug is required'),
     author: objectIdSchema,
     content: z.string().min(1, 'Content is required'),
+    category: z.string().min(1, 'Category is required'),
+    subscription: z.enum(['free', 'premium']),
     featuredImage: z.string().url(),
     likes: z.array(objectIdSchema).optional(),
     dislikes: z.array(objectIdSchema).optional(),

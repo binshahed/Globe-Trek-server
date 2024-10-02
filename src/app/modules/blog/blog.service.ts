@@ -129,6 +129,20 @@ const disLikeToggle = async (
   return blog;
 };
 
+const deleteBlog = async (userId: Types.ObjectId, blogId: Types.ObjectId) => {
+  const blog = await BlogModel.findOne({ author: userId, _id: blogId });
+  if (!blog) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      'Blog not found or you do not have permission to delete this blog',
+    );
+  }
+
+  const deletedData = await BlogModel.findByIdAndDelete(blog._id);
+
+  return deletedData;
+};
+
 export const blogService = {
   createBlog,
   getAllBlogs,
@@ -137,4 +151,5 @@ export const blogService = {
   likeToggle,
   disLikeToggle,
   updateBlog,
+  deleteBlog,
 };

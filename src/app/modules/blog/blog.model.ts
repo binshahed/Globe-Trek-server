@@ -25,6 +25,19 @@ const blogSchema = new Schema<TBlog>(
       required: true,
     },
 
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
+
+    subsCription: {
+      type: String,
+      enum: ['free', 'premium'],
+      default: 'free',
+      required: true,
+    },
+
     featuredImage: {
       type: String,
       required: true,

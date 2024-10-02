@@ -89,6 +89,19 @@ const disLikeToggle = catchAsync(async (req, res) => {
   });
 });
 
+const deleteBlog = catchAsync(async (req, res) => {
+  const { blogId } = req.params;
+  const user = req.user;
+  const result = await blogService.deleteBlog(user?._id, blogId as any);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog deleted successfully',
+    data: result,
+  });
+});
+
 export const blogController = {
   createBlog,
   getAllBlogs,
@@ -97,4 +110,5 @@ export const blogController = {
   likeToggle,
   disLikeToggle,
   updateBlog,
+  deleteBlog,
 };
