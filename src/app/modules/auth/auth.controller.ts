@@ -140,7 +140,7 @@ const toggleFollow = catchAsync(async (req, res) => {
 });
 
 const authPayment = catchAsync(async (req, res) => {
-  const user = await authService.authPayment(req.user as TUser, req.body);
+  const user = await authService.authPayment(req.user as TUser);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

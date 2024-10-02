@@ -5,21 +5,28 @@ import AppError from '../../errors/AppError';
 import PaymentModel from './payment.model';
 import { UserModel } from '../auth/auth.model';
 
-const successPayment = async (payLoad: any) => {
+
+const successPayment = async (payload: any) => {
   const isPaymentExist = await PaymentModel.findOne({
-    booking: payLoad.booking,
+    user: payload.user,
   });
+
+  const user = await UserModel.findById(payload?.user);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  await UserModel.findByIdAndUpdate(user, { subscriptions: 'premium' });
 
   if (isPaymentExist) {
     return { exists: true };
   }
 
-  const payment = await PaymentModel.create(payLoad);
+  const payment = await PaymentModel.create(payload);
   if (!payment) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Payment is not created');
   }
-
-  // const updateUser = await UserModel.
 
   return { exists: false };
 };

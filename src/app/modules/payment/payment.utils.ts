@@ -7,8 +7,8 @@ import jwt from 'jsonwebtoken';
 import config from '../../config';
 import { generateRandom20DigitString } from '../../utils/generateRandomId';
 
-const liveUrl: string = 'http://localhost:4000';
-// const liveUrl: string = 'https://car-wash-booking-system-ten.vercel.app';
+// const liveUrl: string = 'http://localhost:5000';
+const liveUrl: string = 'https://globe-trek-server.vercel.app';
 
 export const paymentResponse = async (
   payloadUser: any,
@@ -18,7 +18,7 @@ export const paymentResponse = async (
   const tranId = generateRandom20DigitString();
 
   const token = jwt.sign(
-    { transactionId: tranId, amount },
+    { transactionId: tranId, amount, user: payloadUser?._id },
     config.paymentSignatureKey as string,
     { expiresIn: '1h' },
   );

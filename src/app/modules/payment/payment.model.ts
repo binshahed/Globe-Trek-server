@@ -12,7 +12,7 @@ const PaymentSchema: Schema = new Schema<TPayment>(
       required: true,
     },
 
-    booking: { type: Schema.Types.ObjectId, ref: 'Booking', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true },
 );

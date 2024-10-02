@@ -18,6 +18,7 @@ import {
 import { sendEmail } from '../../utils/sendEmail';
 
 import mongoose from 'mongoose';
+import { paymentResponse } from '../payment/payment.utils';
 
 const signupUser = async (payload: TUserSignUp) => {
   // Check if user already exists by email
@@ -384,8 +385,9 @@ const toggleFollow = async (user: TUser, followerId: string) => {
   }
 };
 
-const authPayment = async (user: TUser, payload: any) => {
-  console.log(user, payload);
+const authPayment = async (user: TUser) => {
+  const payment = await paymentResponse(user, 50);
+  return payment;
 };
 
 export const authService = {
