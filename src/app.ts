@@ -17,8 +17,8 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://globe-trek-client.vercel.app',
       'https://globe-trek-server.vercel.app',
+      'https://globe-trek-client.vercel.app',
       '*',
     ],
     credentials: true,

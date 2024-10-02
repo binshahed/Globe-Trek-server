@@ -12,10 +12,12 @@ const signupUser = catchAsync(async (req, res) => {
   res.cookie('refreshToken', refreshToken, {
     secure: config.nodeEnv === 'production',
     httpOnly: true,
+    sameSite: 'none',
   });
   res.cookie('accessToken', accessToken, {
     secure: config.nodeEnv === 'production',
     httpOnly: true,
+    sameSite: 'none',
   });
 
   sendResponse(res, {
@@ -34,11 +36,13 @@ const loginUser = catchAsync(async (req, res) => {
   res.cookie('refreshToken', refreshToken, {
     secure: config.nodeEnv === 'production',
     httpOnly: true,
+    sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
   });
 
-  res.cookie('accessToken', accessToken, {
+  res.cookie('refreshToken', refreshToken, {
     secure: config.nodeEnv === 'production',
     httpOnly: true,
+    sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
   });
 
   sendResponse(res, {
