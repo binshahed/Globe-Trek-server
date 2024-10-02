@@ -15,8 +15,15 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: [
+      'http://localhost:3000',
+      'https://globe-trek-client.vercel.app',
+      'https://globe-trek-server.vercel.app',
+      '*',
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 

@@ -3,6 +3,7 @@ import { authRouter } from '../modules/auth/auth.routes';
 import { categoryRouter } from '../modules/category/category.routes';
 import { blogRouter } from '../modules/blog/blog.routes';
 import { commentRouter } from '../modules/comment/comment.routes';
+import { paymentRouter } from '../modules/payment/payment.routes';
 
 const modulesRouters = [
   {
@@ -20,6 +21,10 @@ const modulesRouters = [
   {
     path: '/api/comment',
     route: commentRouter,
+  },
+  {
+    path: '/api/payment',
+    route: paymentRouter,
   },
 ];
 

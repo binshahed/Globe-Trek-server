@@ -88,6 +88,7 @@ const forgotPassword = catchAsync(async (req, res) => {
 
 const resetPassword = catchAsync(async (req, res) => {
   const token = req.headers.authorization;
+
   const user = await authService.resetPassword(req.body, token as string);
 
   sendResponse(res, {
@@ -134,6 +135,17 @@ const toggleFollow = catchAsync(async (req, res) => {
   });
 });
 
+const authPayment = catchAsync(async (req, res) => {
+  const user = await authService.authPayment(req.user as TUser, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment successful!',
+    data: user,
+  });
+});
+
 export const authController = {
   loginUser,
   changePassword,
@@ -144,4 +156,5 @@ export const authController = {
   getUserProfile,
   updateUserProfile,
   toggleFollow,
+  authPayment,
 };

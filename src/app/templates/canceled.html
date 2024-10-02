@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Canceled</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #1a1a2e;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #e0e0e0;
+      }
+
+      .cancel-container {
+        background-color: #243442;
+        border-radius: 12px;
+        padding: 40px 30px;
+        text-align: center;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      .cancel-icon {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .cancel-icon svg {
+        width: 80px;
+        height: 80px;
+        fill: #ffc107;
+        animation: spin 1s infinite linear;
+      }
+
+      .cancel-message {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #ffffff;
+      }
+
+      .cancel-description {
+        font-size: 18px;
+        color: #b0c4de;
+        margin-bottom: 25px;
+        line-height: 1.5;
+      }
+
+      .button {
+        display: inline-block;
+        background: linear-gradient(45deg, #ffb347, #ffcc33);
+        color: #ffffff;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background 0.3s ease;
+      }
+
+      .button:hover {
+        background: linear-gradient(45deg, #ffcc33, #ffb347);
+        transform: scale(1.05);
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cancel-container">
+      <div class="cancel-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="30" stroke="#ffc107" stroke-width="4" fill="none" />
+          <line x1="20" y1="20" x2="44" y2="44" stroke="#ffc107" stroke-width="4" />
+          <line x1="44" y1="20" x2="20" y2="44" stroke="#ffc107" stroke-width="4" />
+        </svg>
+      </div>
+      <div class="cancel-message">Payment Canceled</div>
+      <div class="cancel-description">
+        Your transaction was canceled. If this was a mistake, please try
+        again.
+      </div>
+      <a class="button" href="https://car-wash-booking-system-client-opal.vercel.app/">
+        Go Back
+      </a>
+    </div>
+  </body>
+</html>

@@ -245,7 +245,7 @@ const forgotPassword = async (email: string) => {
     throw new AppError(httpStatus.FORBIDDEN, 'Something went wrong');
   }
 
-  const resetUiLink = `${config?.clientUrl}?id=${user._id}&token=${accessToken}`;
+  const resetUiLink = `${config?.clientUrl}/login/reset-password?id=${user._id}&token=${accessToken}`;
 
   sendEmail(user.email, resetUiLink);
 
@@ -253,16 +253,10 @@ const forgotPassword = async (email: string) => {
 };
 
 const resetPassword = async (
-  payload: { email: string; newPassword: string },
+  payload: { newPassword: string },
   token: string,
 ) => {
   // check if old password is correct
-
-  const user = await UserModel.isUserExistsByEmail(payload.email);
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found');
-  }
 
   // Verify the access token and decode the payload
   const decodedToken = verifyToken(token, config.jwtAccessSecretKey as string);
@@ -271,13 +265,19 @@ const resetPassword = async (
     throw new AppError(httpStatus.FORBIDDEN, 'Token is not Valid');
   }
 
+  const user = await UserModel.isUserExistsByEmail(decodedToken?.data?.email);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Not Found');
+  }
+
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
     Number(config.saltRound),
   );
 
   await UserModel.findOneAndUpdate(
-    { email: payload.email },
+    { email: decodedToken?.data?.email },
     {
       password: newHashedPassword,
       needsPasswordChange: false,
@@ -384,6 +384,10 @@ const toggleFollow = async (user: TUser, followerId: string) => {
   }
 };
 
+const authPayment = async (user: TUser, payload: any) => {
+  console.log(user, payload);
+};
+
 export const authService = {
   loginUser,
   changePassword,
@@ -394,4 +398,5 @@ export const authService = {
   getUserProfile,
   updateUserProfile,
   toggleFollow,
+  authPayment,
 };

@@ -38,8 +38,6 @@ const updateComment = catchAsync(async (req, res) => {
 });
 
 const deleteComment = catchAsync(async (req, res) => {
-  console.log(req?.user);
-
   const result = await commentService.deleteComment(
     req.user?._id,
     req.params.commentId,

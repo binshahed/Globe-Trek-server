@@ -6,19 +6,20 @@ dotenv.config({ path: path.join(process.cwd(), '.env') })
 
 // Define a TypeScript interface for the configuration
 interface Config {
-  nodeEnv: string | undefined
-  clientUrl: string | undefined
-  port: string | undefined
-  databaseUrl: string | undefined
-  defaultPassword: string | undefined
-  saltRound: string | undefined
-  jwtAccessSecretKey: string | undefined
-  jwtRefreshSecretKey: string | undefined
-  jwtAccessExpiresIn: string | undefined
-  jwtRefreshExpiresIn: string | undefined
-  cloudinary_cloud_name: string | undefined
-  cloudinary_api_key: string | undefined
-  cloudinary_api_secret: string | undefined
+  nodeEnv: string | undefined;
+  clientUrl: string | undefined;
+  port: string | undefined;
+  databaseUrl: string | undefined;
+  defaultPassword: string | undefined;
+  saltRound: string | undefined;
+  jwtAccessSecretKey: string | undefined;
+  jwtRefreshSecretKey: string | undefined;
+  jwtAccessExpiresIn: string | undefined;
+  jwtRefreshExpiresIn: string | undefined;
+  cloudinary_cloud_name: string | undefined;
+  cloudinary_api_key: string | undefined;
+  cloudinary_api_secret: string | undefined;
+  paymentSignatureKey: string | undefined;
 }
 
 // Export the configuration as an object implementing the Config interface
@@ -36,6 +37,7 @@ const config: Config = {
   cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
-}
+  paymentSignatureKey: process.env.PAYMENT_SIGNATURE_KEY,
+};
 
 export default config

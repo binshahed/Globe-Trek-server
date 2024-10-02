@@ -38,7 +38,6 @@ router
 router
   .route('/reset-password')
   .post(
-    auth(),
     validateRequest(AuthValidation.resetPasswordValidationSchema),
     authController.resetPassword,
   );
@@ -59,5 +58,7 @@ router
   .route('/follow')
   .patch(auth('admin', 'user'), authController.toggleFollow);
 
-
+router
+  .route('/payment')
+  .post(auth('admin', 'user'), authController.authPayment);
 export const authRouter = router;
