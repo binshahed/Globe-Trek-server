@@ -7,8 +7,8 @@ import jwt from 'jsonwebtoken';
 import config from '../../config';
 import { generateRandom20DigitString } from '../../utils/generateRandomId';
 
-// const liveUrl: string = 'http://localhost:5000';
-const liveUrl: string = 'https://globe-trek-server.vercel.app';
+const liveUrl: string = 'http://localhost:5000';
+// const liveUrl: string = 'https://globe-trek-server.vercel.app';
 
 export const paymentResponse = async (
   payloadUser: any,

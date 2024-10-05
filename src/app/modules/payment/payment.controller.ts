@@ -7,6 +7,7 @@ import config from '../../config';
 import { paymentService } from './payment.service';
 import path from 'path';
 import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
 
 // create a new Review
 const successPayment = catchAsync(async (req, res) => {
@@ -35,9 +36,7 @@ const successPayment = catchAsync(async (req, res) => {
 
   if (result.exists as boolean) {
     // Redirect to the specified URL if payment already exists
-    return res.redirect(
-      'https://car-wash-booking-system-client-opal.vercel.app/',
-    );
+    return res.redirect('https://globe-trek-client.vercel.app/');
   }
 
   const filePath = path.resolve(__dirname, '../../templates/success.html');
@@ -114,8 +113,21 @@ const successPayment = catchAsync(async (req, res) => {
 //   }
 // });
 
+
+const getPaymentDetails = catchAsync(async (req, res) => {
+  const result = await paymentService.getPaymentDetails(req?.user?._id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment details retrieved successfully',
+    data: result,
+  });
+});
+
 export const paymentController = {
   successPayment,
+  getPaymentDetails,
   // failedPayment,
   // canceledPayment,
 };

@@ -19,6 +19,8 @@ import { sendEmail } from '../../utils/sendEmail';
 
 import mongoose from 'mongoose';
 import { paymentResponse } from '../payment/payment.utils';
+import PaymentModel from '../payment/payment.model';
+import BlogModel from '../blog/blog.model';
 
 const signupUser = async (payload: TUserSignUp) => {
   // Check if user already exists by email
@@ -291,6 +293,27 @@ const resetPassword = async (
 };
 
 const getUserProfile = async (user: TUser) => {
+  const paymentInfo = await PaymentModel.findOne({ user: user?._id });
+
+  const blogs = await BlogModel.find({ author: user?._id });
+
+  const totalLikes = blogs.reduce((acc, blog) => acc + blog.likes.length, 0);
+
+  console.log('payment Info', paymentInfo);
+  console.log('blogs', totalLikes);
+
+  if (totalLikes > 0 && paymentInfo?.user && user?.subscriptions === 'free') {
+    console.log('inside the free subscription');
+
+    await UserModel.findByIdAndUpdate(user?._id, { subscriptions: 'premium' });
+  } else if (
+    totalLikes === 0 &&
+    paymentInfo?.user &&
+    user?.subscriptions === 'premium'
+  ) {
+    await UserModel.findByIdAndUpdate(user?._id, { subscriptions: 'free' });
+  }
+
   // Fetch the user's full data using the id from the token
   const profile = await UserModel.findById(user?._id)
     .populate('followers')
