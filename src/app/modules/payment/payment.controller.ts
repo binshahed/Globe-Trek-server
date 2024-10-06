@@ -113,9 +113,19 @@ const successPayment = catchAsync(async (req, res) => {
 //   }
 // });
 
-
 const getPaymentDetails = catchAsync(async (req, res) => {
   const result = await paymentService.getPaymentDetails(req?.user?._id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment details retrieved successfully',
+    data: result,
+  });
+});
+
+const getAllPayment = catchAsync(async (req, res) => {
+  const result = await paymentService.getAllPayment();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -130,4 +140,5 @@ export const paymentController = {
   getPaymentDetails,
   // failedPayment,
   // canceledPayment,
+  getAllPayment,
 };

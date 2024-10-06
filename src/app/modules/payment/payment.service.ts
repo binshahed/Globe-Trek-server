@@ -56,8 +56,16 @@ const getPaymentDetails = async (userId: string) => {
   return paymentDetails;
 };
 
+const getAllPayment = async () => {
+  const appPaymentDetails = await PaymentModel.find()
+    .populate('user', '_id name email')
+    .exec();
+  return appPaymentDetails;
+};
+
 export const paymentService = {
   successPayment,
   getPaymentDetails,
+  getAllPayment,
   // failedPayment,
 };

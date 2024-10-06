@@ -299,12 +299,7 @@ const getUserProfile = async (user: TUser) => {
 
   const totalLikes = blogs.reduce((acc, blog) => acc + blog.likes.length, 0);
 
-  console.log('payment Info', paymentInfo);
-  console.log('blogs', totalLikes);
-
   if (totalLikes > 0 && paymentInfo?.user && user?.subscriptions === 'free') {
-    console.log('inside the free subscription');
-
     await UserModel.findByIdAndUpdate(user?._id, { subscriptions: 'premium' });
   } else if (
     totalLikes === 0 &&
@@ -413,6 +408,13 @@ const authPayment = async (user: TUser) => {
   return payment;
 };
 
+const getUsers = async () => {
+  const users = await UserModel.find()
+    .populate('followers')
+    .populate('following');
+  return users;
+};
+
 export const authService = {
   loginUser,
   changePassword,
@@ -424,4 +426,5 @@ export const authService = {
   updateUserProfile,
   toggleFollow,
   authPayment,
+  getUsers,
 };

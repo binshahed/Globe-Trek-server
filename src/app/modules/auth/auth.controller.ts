@@ -150,6 +150,17 @@ const authPayment = catchAsync(async (req, res) => {
   });
 });
 
+const getUsers = catchAsync(async (req, res) => {
+  const users = await authService.getUsers();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Users retrieved successfully!',
+    data: users,
+  });
+});
+
 export const authController = {
   loginUser,
   changePassword,
@@ -161,4 +172,5 @@ export const authController = {
   updateUserProfile,
   toggleFollow,
   authPayment,
+  getUsers,
 };
