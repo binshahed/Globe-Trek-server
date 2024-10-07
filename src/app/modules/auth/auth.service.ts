@@ -333,6 +333,21 @@ const updateUserProfile = async (user: TUser, payload: any) => {
 
   return updatedUser;
 };
+const updateUserRole = async (payload: any) => {
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    payload?.user,
+    { role: payload.role },
+    {
+      new: true,
+    },
+  );
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, 'The user does not exist');
+  }
+
+  return updatedUser;
+};
 
 const toggleFollow = async (user: TUser, followerId: string) => {
   // Trim the followerId to remove any leading/trailing spaces
@@ -424,6 +439,7 @@ export const authService = {
   signupUser,
   getUserProfile,
   updateUserProfile,
+  updateUserRole,
   toggleFollow,
   authPayment,
   getUsers,

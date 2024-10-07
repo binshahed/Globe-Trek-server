@@ -36,6 +36,10 @@ router
   );
 
 router
+  ?.route('/change-role')
+  .patch(auth('admin'), authController.updateUserRole);
+
+router
   .route('/reset-password')
   .post(
     validateRequest(AuthValidation.resetPasswordValidationSchema),
@@ -62,5 +66,5 @@ router
   .route('/payment')
   .post(auth('admin', 'user'), authController.authPayment);
 
-  router.route('/users').get(auth('admin'), authController.getUsers);
+router.route('/users').get(auth('admin'), authController.getUsers);
 export const authRouter = router;

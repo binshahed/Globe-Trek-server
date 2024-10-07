@@ -124,6 +124,16 @@ const updateUserProfile = catchAsync(async (req, res) => {
     data: user,
   });
 });
+const updateUserRole = catchAsync(async (req, res) => {
+  const user = await authService.updateUserRole(req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Role updated successfully!',
+    data: user,
+  });
+});
 
 const toggleFollow = catchAsync(async (req, res) => {
   const user = await authService.toggleFollow(
@@ -170,6 +180,7 @@ export const authController = {
   signupUser,
   getUserProfile,
   updateUserProfile,
+  updateUserRole,
   toggleFollow,
   authPayment,
   getUsers,
