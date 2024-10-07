@@ -51,7 +51,9 @@ const getPaymentDetails = async (userId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  const paymentDetails = await PaymentModel.findOne({ user: userId });
+  const paymentDetails = await PaymentModel.findOne({ user: userId }).populate(
+    'user',
+  );
 
   return paymentDetails;
 };

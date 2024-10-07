@@ -59,12 +59,13 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
 
   const blogQuery = new QueryBuilder(BlogModel.find(), query).paginate().sort();
 
-  return blogQuery.modelQuery.populate('author').exec();
+  return blogQuery.modelQuery.populate('author').populate('category').exec();
 };
 
 const myBlogs = async (userId: Types.ObjectId) => {
   const blog = await BlogModel.find({ author: userId })
     .populate('author')
+    .populate('category')
     .sort({ createdAt: -1 });
 
   return blog;
