@@ -351,10 +351,11 @@ const updateUserRole = async (payload: any) => {
 
 const toggleFollow = async (user: TUser, followerId: string) => {
   // Trim the followerId to remove any leading/trailing spaces
-  const trimmedFollowerId = followerId.trim();
 
   // Convert followerId to ObjectId
-  const objectIdFollower = new mongoose.Types.ObjectId(trimmedFollowerId);
+  const objectIdFollower = new mongoose.Types.ObjectId(followerId);
+
+  console.log(followerId);
 
   // Check if the user (followerId) exists
   const isUserExist = await UserModel.findById(objectIdFollower);
