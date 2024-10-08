@@ -57,7 +57,11 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
   // Implement the logic to retrieve all blogs from the database
   // Return an array of blog objects
 
-  const blogQuery = new QueryBuilder(BlogModel.find(), query).paginate().sort();
+  const blogQuery = new QueryBuilder(BlogModel.find(), query)
+    .search(['title', 'slug', 'content'])
+    .paginate()
+    .sort()
+    .fields();
 
   return blogQuery.modelQuery.populate('author').populate('category').exec();
 };
@@ -144,6 +148,13 @@ const deleteBlog = async (userId: Types.ObjectId, blogId: Types.ObjectId) => {
   return deletedData;
 };
 
+const getPdf = async (blogId: Types.ObjectId) => {
+  const blog = await BlogModel.findById(blogId);
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+};
+
 export const blogService = {
   createBlog,
   getAllBlogs,
@@ -153,4 +164,5 @@ export const blogService = {
   disLikeToggle,
   updateBlog,
   deleteBlog,
+  getPdf,
 };
