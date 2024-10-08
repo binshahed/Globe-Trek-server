@@ -355,8 +355,6 @@ const toggleFollow = async (user: TUser, followerId: string) => {
   // Convert followerId to ObjectId
   const objectIdFollower = new mongoose.Types.ObjectId(followerId);
 
-  console.log(followerId);
-
   // Check if the user (followerId) exists
   const isUserExist = await UserModel.findById(objectIdFollower);
   if (!isUserExist) {

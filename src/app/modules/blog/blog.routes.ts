@@ -35,5 +35,5 @@ router
   .patch(auth('admin', 'user'), blogController.disLikeToggle);
 
 
-  router.route('/get-pdf/:blogId').post(blogController.getPdf);
+
 export const blogRouter = router;
