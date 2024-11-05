@@ -171,6 +171,19 @@ const getUsers = catchAsync(async (req, res) => {
   });
 });
 
+
+const getAuthor = catchAsync(async (req, res) => {
+  const { authorId } = req.params;
+  const result = await authService.getAuthor(authorId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Author details retrieved successfully',
+    data: result,
+  });
+});
+
 export const authController = {
   loginUser,
   changePassword,
@@ -184,4 +197,5 @@ export const authController = {
   toggleFollow,
   authPayment,
   getUsers,
+  getAuthor,
 };

@@ -4,7 +4,6 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { blogService } from './blog.service';
 
-
 const createBlog = catchAsync(async (req, res) => {
   const result = await blogService.createBlog(req.body);
 
@@ -103,6 +102,18 @@ const deleteBlog = catchAsync(async (req, res) => {
   });
 });
 
+const getAuthorsBlog = catchAsync(async (req, res) => {
+  const { authorId } = req.params;
+  const result = await blogService.getAuthorsBlog(authorId as any);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Author's blog retrieved successfully",
+    data: result,
+  });
+});
+
 export const blogController = {
   createBlog,
   getAllBlogs,
@@ -112,4 +123,5 @@ export const blogController = {
   disLikeToggle,
   updateBlog,
   deleteBlog,
+  getAuthorsBlog,
 };

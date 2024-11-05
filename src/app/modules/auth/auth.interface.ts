@@ -11,6 +11,7 @@ export type TUser = {
   password: string;
   phone: string;
   photoUrl: string;
+  about?: string;
   subscriptions: 'free' | 'premium';
   role: TUserRole;
   address: string;

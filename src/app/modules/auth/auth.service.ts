@@ -429,6 +429,18 @@ const getUsers = async () => {
   return users;
 };
 
+const getAuthor = async (id: string) => {
+  const author = await UserModel.findById(id)
+    .populate('followers')
+    .populate('following');
+
+  if (!author) {
+    throw new AppError(httpStatus.NOT_FOUND, 'The author does not exist');
+  }
+
+  return author;
+};
+
 export const authService = {
   loginUser,
   changePassword,
@@ -442,4 +454,5 @@ export const authService = {
   toggleFollow,
   authPayment,
   getUsers,
+  getAuthor,
 };

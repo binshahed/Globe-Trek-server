@@ -40,6 +40,9 @@ const userSchema = new Schema<TUser, TUserModel>(
       required: [true, 'Phone number is required'],
       minlength: [10, 'Phone number must be at least 10 characters long'],
     },
+    about: {
+      type: String,
+    },
     role: {
       type: String,
       enum: ['admin', 'user'],

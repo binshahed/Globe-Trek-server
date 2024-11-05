@@ -148,7 +148,14 @@ const deleteBlog = async (userId: Types.ObjectId, blogId: Types.ObjectId) => {
   return deletedData;
 };
 
+const getAuthorsBlog = async (authorId: Types.ObjectId) => {
+  const blogs = await BlogModel.find({ author: authorId })
+    .populate('author')
+    .populate('category')
+    .sort({ createdAt: -1 });
 
+  return blogs;
+};
 
 export const blogService = {
   createBlog,
@@ -159,4 +166,5 @@ export const blogService = {
   disLikeToggle,
   updateBlog,
   deleteBlog,
+  getAuthorsBlog,
 };

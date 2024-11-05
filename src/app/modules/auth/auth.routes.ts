@@ -67,4 +67,7 @@ router
   .post(auth('admin', 'user'), authController.authPayment);
 
 router.route('/users').get(auth('admin'), authController.getUsers);
+
+router.route('/author/:authorId').get(authController.getAuthor);
+
 export const authRouter = router;
