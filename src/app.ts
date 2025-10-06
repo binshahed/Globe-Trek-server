@@ -13,6 +13,8 @@ app.use((req, res, next) => {
   next();
 });
 
+console.log("hello world");
+
 app.use(
   cors({
     origin: [
